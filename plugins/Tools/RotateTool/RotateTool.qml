@@ -28,7 +28,6 @@ Item
         //First convert to fixed-point notation to round the number to 4 decimals and not introduce new floating point errors.
         //Then convert to a string (is implicit). The fixed-point notation will be something like "3.200".
         //Then remove any trailing zeroes and the radix.
-        var input= parseInt(input)
         var output = input.toFixed(decimals).replace(/\.?0*$/, ""); //Match on periods, if any ( \.? ), followed by any number of zeros ( 0* ), then the end of string ( $ ).
         if(output == "-0")
         {
@@ -93,7 +92,7 @@ Item
         {
             width: UM.Theme.getSize("setting_control").width;
             height: UM.Theme.getSize("setting_control").height;
-            property string unit: "degrees";
+            property string unit: "°";
             style: UM.Theme.styles.text_field;
             text: xText
             validator: DoubleValidator
@@ -117,7 +116,7 @@ Item
         {
             width: UM.Theme.getSize("setting_control").width;
             height: UM.Theme.getSize("setting_control").height;
-            property string unit: "degrees";
+            property string unit: "°";
             style: UM.Theme.styles.text_field;
             text: yText
             validator: DoubleValidator
@@ -141,7 +140,7 @@ Item
         {
             width: UM.Theme.getSize("setting_control").width;
             height: UM.Theme.getSize("setting_control").height;
-            property string unit: "degrees";
+            property string unit: "°";
             style: UM.Theme.styles.text_field;
             text: zText
             validator: DoubleValidator
@@ -229,14 +228,14 @@ Item
     {
         target: base
         property: "yText"
-        value: base.roundFloat(UM.ActiveTool.properties.getValue("Z"), 4)
+        value: base.roundFloat(UM.ActiveTool.properties.getValue("Y"), 4)
     }
 
     Binding
     {
         target: base
         property: "zText"
-        value:base.roundFloat(UM.ActiveTool.properties.getValue("Y"), 4)
+        value:base.roundFloat(UM.ActiveTool.properties.getValue("Z"), 4)
     }
 
 }
