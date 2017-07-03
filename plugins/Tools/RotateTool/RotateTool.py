@@ -138,15 +138,15 @@ class RotateTool(Tool):
             if self.getLockedAxis() == ToolHandle.XAxis:
                 direction = 1 if Vector.Unit_X.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_X)
-                self._x_angle = str( float(self._x_angle) + direction * math.degrees( angle ) )
+                self._x_angle = self._x_angle + direction * angle
             elif self.getLockedAxis() == ToolHandle.YAxis:
                 direction = 1 if Vector.Unit_Y.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_Y)
-                self._y_angle = str( float(self._y_angle) + direction * math.degrees( angle ) )
+                self._z_angle = self._z_angle + direction * angle
             elif self.getLockedAxis() == ToolHandle.ZAxis:
                 direction = 1 if Vector.Unit_Z.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_Z)
-                self._z_angle = str( float(self._z_angle) + direction * math.degrees( angle ) )
+                self._y_angle = self._y_angle + direction * angle
             else:
                 direction = -1
 
@@ -233,10 +233,11 @@ class RotateTool(Tool):
     def setX(self, x):
         x = math.radians(self._parseInt(x))
         if x != self._x_angle:
+            x_angle_change = x - self._x_angle
             self._x_angle = x
             self.propertyChanged.emit()
 
-            rotation = Quaternion.fromAngleAxis(self._x_angle, Vector.Unit_X)
+            rotation = Quaternion.fromAngleAxis(x_angle_change, Vector.Unit_X)
 
             # Save the current positions of the node, as we want to rotate around their current centres
             self._saved_node_positions = []
@@ -271,10 +272,11 @@ class RotateTool(Tool):
     def setY(self, y):
         y = math.radians(self._parseInt(y))
         if y != self._y_angle:
+            y_angle_change = y - self._y_angle
             self._y_angle = y
             self.propertyChanged.emit()
 
-            rotation = Quaternion.fromAngleAxis(self._y_angle, Vector.Unit_Y)
+            rotation = Quaternion.fromAngleAxis(y_angle_change, Vector.Unit_Z)
 
             # Save the current positions of the node, as we want to rotate around their current centres
             self._saved_node_positions = []
@@ -310,10 +312,11 @@ class RotateTool(Tool):
     def setZ(self, z):
         z = math.radians(self._parseInt(z))
         if z != self._z_angle:
+            z_angle_change = z - self._z_angle
             self._z_angle = z
             self.propertyChanged.emit()
 
-            rotation = Quaternion.fromAngleAxis(self._z_angle, Vector.Unit_Z)
+            rotation = Quaternion.fromAngleAxis(z_angle_change, Vector.Unit_Y)
 
             # Save the current positions of the node, as we want to rotate around their current centres
             self._saved_node_positions = []
