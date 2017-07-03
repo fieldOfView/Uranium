@@ -36,9 +36,9 @@ class RotateTool(Tool):
         self._snap_rotation = True
         self._snap_angle = math.radians(15)
 
-        self._X_angle = 0
-        self._Y_angle = 0
-        self._Z_angle = 0
+        self._x_angle = 0
+        self._y_angle = 0
+        self._z_angle = 0
 
         self._angle = None
         self._angle_update_time = None
@@ -138,15 +138,15 @@ class RotateTool(Tool):
             if self.getLockedAxis() == ToolHandle.XAxis:
                 direction = 1 if Vector.Unit_X.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_X)
-                self._X_angle = str( float(self._X_angle) + direction * math.degrees( angle ) )
+                self._x_angle = str( float(self._x_angle) + direction * math.degrees( angle ) )
             elif self.getLockedAxis() == ToolHandle.YAxis:
                 direction = 1 if Vector.Unit_Y.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_Y)
-                self._Y_angle = str( float(self._Y_angle) + direction * math.degrees( angle ) )
+                self._y_angle = str( float(self._y_angle) + direction * math.degrees( angle ) )
             elif self.getLockedAxis() == ToolHandle.ZAxis:
                 direction = 1 if Vector.Unit_Z.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_Z)
-                self._Z_angle = str( float(self._Z_angle) + direction * math.degrees( angle ) )
+                self._z_angle = str( float(self._z_angle) + direction * math.degrees( angle ) )
             else:
                 direction = -1
 
@@ -225,17 +225,18 @@ class RotateTool(Tool):
     #
     #   \return type(float)
     def getX(self):
-        return self._X_angle
+        return math.degrees(self._x_angle)
 
     ##  Set X
     #
-    #   \param X type(float)
-    def setX(self, X):
-        if X != self._X_angle:
-            self._X_angle = float(X)
+    #   \param x type(float)
+    def setX(self, x):
+        x = math.radians(self._parseInt(x))
+        if x != self._x_angle:
+            self._x_angle = x
             self.propertyChanged.emit()
 
-            rotation = Quaternion.fromAngleAxis(self._parseInt(self._X_angle), Vector.Unit_X)
+            rotation = Quaternion.fromAngleAxis(self._x_angle, Vector.Unit_X)
 
             # Save the current positions of the node, as we want to rotate around their current centres
             self._saved_node_positions = []
@@ -262,17 +263,18 @@ class RotateTool(Tool):
     #
     #   \return type(float)
     def getY(self):
-        return self._Y_angle
+        return math.degrees(self._y_angle)
 
     ##  Set Y
     #
-    #   \param Y type(float)
-    def setY(self, Y):
-        if Y != self._Y_angle:
-            self._Y_angle = float(Y)
+    #   \param y type(float)
+    def setY(self, y):
+        y = math.radians(self._parseInt(y))
+        if y != self._y_angle:
+            self._y_angle = y
             self.propertyChanged.emit()
 
-            rotation = Quaternion.fromAngleAxis(self._parseInt(self._Y_angle), Vector.Unit_Y)
+            rotation = Quaternion.fromAngleAxis(self._y_angle, Vector.Unit_Y)
 
             # Save the current positions of the node, as we want to rotate around their current centres
             self._saved_node_positions = []
@@ -300,17 +302,18 @@ class RotateTool(Tool):
     #
     #   \return type(float)
     def getZ(self):
-        return self._Z_angle
+        return math.degrees(self._z_angle)
 
     ##  Set Z
     #
-    #   \param Z type(float)
-    def setZ(self, Z):
-        if Z != self._Z_angle:
-            self._Z_angle = float(Z)
+    #   \param z type(float)
+    def setZ(self, z):
+        z = math.radians(self._parseInt(z))
+        if z != self._z_angle:
+            self._z_angle = z
             self.propertyChanged.emit()
 
-            rotation = Quaternion.fromAngleAxis(self._parseInt(self._Z_angle), Vector.Unit_Z)
+            rotation = Quaternion.fromAngleAxis(self._z_angle, Vector.Unit_Z)
 
             # Save the current positions of the node, as we want to rotate around their current centres
             self._saved_node_positions = []
