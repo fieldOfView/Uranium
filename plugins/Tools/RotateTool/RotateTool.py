@@ -36,10 +36,6 @@ class RotateTool(Tool):
         self._snap_rotation = True
         self._snap_angle = math.radians(15)
 
-        self._x_angle = 0
-        self._y_angle = 0
-        self._z_angle = 0
-
         self._angle = None
         self._angle_update_time = None
 
@@ -51,6 +47,13 @@ class RotateTool(Tool):
         self._rotating = False
         self.setExposedProperties("ToolHint", "RotationSnap", "RotationSnapAngle", "X", "Y", "Z" )
         self._saved_node_positions = []
+
+        self._x_angle = 0
+        self._y_angle = 0
+        self._z_angle = 0
+
+        # Reset local copies of x,y,z angles.
+        Selection.selectionChanged.connect(self._onSelectionChanged)
 
     ##  Handle mouse and keyboard events
     #
@@ -219,6 +222,17 @@ class RotateTool(Tool):
         except ValueError:
             parsed_value = float(0)
         return parsed_value
+
+    def _onSelectionChanged(self):
+        self._x_angle = 0
+        self._y_angle = 0
+        self._z_angle = 0
+
+        if Selection.getCount() == 1:
+            euler_angles = Selection.getSelectedObject(0).getLocalTransformation().getEuler()
+            self._x_angle = euler_angles.x
+            self._y_angle = euler_angles.y
+            self._z_angle = euler_angles.z
 
 
     ##  Get X
