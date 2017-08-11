@@ -150,7 +150,6 @@ class RotateTool(Tool):
             if not self._angle_update_time or new_time - self._angle_update_time > 0.1:
                 self._angle_update_time = new_time
                 self._angle += direction * angle
-                self.propertyChanged.emit()
 
                 # Rotate around the saved centeres of all selected nodes
                 op = GroupedOperation()
@@ -159,6 +158,7 @@ class RotateTool(Tool):
                 op.push()
 
                 self.setDragStart(event.x, event.y)
+                self.propertyChanged.emit()
 
         if event.type == Event.MouseReleaseEvent:
             # Finish a rotate operation
@@ -166,7 +166,6 @@ class RotateTool(Tool):
                 self.setDragPlane(None)
                 self.setLockedAxis(None)
                 self._angle = None
-                self.propertyChanged.emit()
                 if self._rotating:
                     self.operationStopped.emit(self)
                 return True
