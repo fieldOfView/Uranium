@@ -48,13 +48,6 @@ class RotateTool(Tool):
         self.setExposedProperties("ToolHint", "RotationSnap", "RotationSnapAngle", "X", "Y", "Z" )
         self._saved_node_positions = []
 
-        self._x_angle = 0
-        self._y_angle = 0
-        self._z_angle = 0
-
-        # Reset local copies of x,y,z angles.
-        Selection.selectionChanged.connect(self._onSelectionChanged)
-
     ##  Handle mouse and keyboard events
     #
     #   \param event type(Event)
@@ -141,15 +134,12 @@ class RotateTool(Tool):
             if self.getLockedAxis() == ToolHandle.XAxis:
                 direction = 1 if Vector.Unit_X.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_X)
-                self._x_angle = self._x_angle + direction * angle
             elif self.getLockedAxis() == ToolHandle.YAxis:
                 direction = 1 if Vector.Unit_Y.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_Y)
-                self._z_angle = self._z_angle + direction * angle
             elif self.getLockedAxis() == ToolHandle.ZAxis:
                 direction = 1 if Vector.Unit_Z.dot(drag_start.cross(drag_end)) > 0 else -1
                 rotation = Quaternion.fromAngleAxis(direction * angle, Vector.Unit_Z)
-                self._y_angle = self._y_angle + direction * angle
             else:
                 direction = -1
 
@@ -223,33 +213,24 @@ class RotateTool(Tool):
             parsed_value = float(0)
         return parsed_value
 
-    def _onSelectionChanged(self):
-        self._x_angle = 0
-        self._y_angle = 0
-        self._z_angle = 0
-
-        if Selection.getCount() == 1:
-            euler_angles = Selection.getSelectedObject(0).getLocalTransformation().getEuler()
-            self._x_angle = euler_angles.x
-            self._y_angle = euler_angles.y
-            self._z_angle = euler_angles.z
-
-
     ##  Get X
     #
     #   \return type(float)
     def getX(self):
-        return math.degrees(self._x_angle)
+        if Selection.hasSelection():
+            euler_angles = Selection.getSelectedObject(0).getLocalTransformation().getEuler()
+            return float(math.degrees(euler_angles.x))
+        return 0.0
 
     ##  Set X
     #
     #   \param x type(float)
     def setX(self, x):
         x = math.radians(self._parseInt(x))
-        if x != self._x_angle:
-            x_angle_change = x - self._x_angle
-            self._x_angle = x
-            self.propertyChanged.emit()
+        current_x_angle = Selection.getSelectedObject(0).getLocalTransformation().getEuler().x
+
+        if x != current_x_angle:
+            x_angle_change = x - current_x_angle
 
             rotation = Quaternion.fromAngleAxis(x_angle_change, Vector.Unit_X)
 
@@ -272,23 +253,26 @@ class RotateTool(Tool):
                     op.addOperation(RotateOperation(node, rotation, rotate_around_point = position))
                 op.push()
 
-                self.propertyChanged.emit()
+            self.propertyChanged.emit()
 
     ##  Get Y
     #
     #   \return type(float)
     def getY(self):
-        return math.degrees(self._y_angle)
+        if Selection.hasSelection():
+            euler_angles = Selection.getSelectedObject(0).getLocalTransformation().getEuler()
+            return float(math.degrees(euler_angles.z))
+        return 0.0
 
     ##  Set Y
     #
     #   \param y type(float)
     def setY(self, y):
         y = math.radians(self._parseInt(y))
-        if y != self._y_angle:
-            y_angle_change = y - self._y_angle
-            self._y_angle = y
-            self.propertyChanged.emit()
+        current_y_angle = Selection.getSelectedObject(0).getLocalTransformation().getEuler().z
+
+        if y != current_y_angle:
+            y_angle_change = y - current_y_angle
 
             rotation = Quaternion.fromAngleAxis(y_angle_change, Vector.Unit_Z)
 
@@ -311,24 +295,27 @@ class RotateTool(Tool):
                     op.addOperation(RotateOperation(node, rotation, rotate_around_point = position))
                 op.push()
 
-                self.propertyChanged.emit()
+            self.propertyChanged.emit()
 
 
     ##  Get Z
     #
     #   \return type(float)
     def getZ(self):
-        return math.degrees(self._z_angle)
+        if Selection.hasSelection():
+            euler_angles = Selection.getSelectedObject(0).getLocalTransformation().getEuler()
+            return float(math.degrees(euler_angles.y))
+        return 0.0
 
     ##  Set Z
     #
     #   \param z type(float)
     def setZ(self, z):
         z = math.radians(self._parseInt(z))
-        if z != self._z_angle:
-            z_angle_change = z - self._z_angle
-            self._z_angle = z
-            self.propertyChanged.emit()
+        current_z_angle = Selection.getSelectedObject(0).getLocalTransformation().getEuler().y
+
+        if z != current_z_angle:
+            z_angle_change = z - current_z_angle
 
             rotation = Quaternion.fromAngleAxis(z_angle_change, Vector.Unit_Y)
 
@@ -351,13 +338,14 @@ class RotateTool(Tool):
                     op.addOperation(RotateOperation(node, rotation, rotate_around_point = position))
                 op.push()
 
-                self.propertyChanged.emit()
+            self.propertyChanged.emit()
 
 
 
     ##  Reset the orientation of the mesh(es) to their original orientation(s)
     def resetRotation(self):
         Selection.applyOperation(SetTransformOperation, None, Quaternion(), None)
+        self.propertyChanged.emit()
 
     ##  Initialise and start a LayFlatOperation
     #
@@ -407,6 +395,7 @@ class RotateTool(Tool):
             self._progress_message = None
 
         self.operationStopped.emit(self)
+        self.propertyChanged.emit()
 
 ##  A LayFlatJob bundles multiple LayFlatOperations for multiple selected objects
 #
