@@ -178,7 +178,11 @@ Item
         style: UM.Theme.styles.tool_button;
         z: 1
 
-        onClicked: UM.ActiveTool.triggerAction("resetRotation");
+        onClicked:
+        {
+            forceActiveFocus();
+            UM.ActiveTool.triggerAction("resetRotation");
+        }
     }
 
     Button
@@ -196,7 +200,11 @@ Item
 
         style: UM.Theme.styles.tool_button;
 
-        onClicked: UM.ActiveTool.triggerAction("layFlat");
+        onClicked:
+        {
+            forceActiveFocus();
+            UM.ActiveTool.triggerAction("layFlat");
+        }
     }
 
     CheckBox
